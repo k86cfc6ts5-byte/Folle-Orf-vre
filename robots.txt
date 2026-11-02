@@ -1,0 +1,4 @@
+# Replace YOUR-DOMAIN-HERE before launch.
+User-agent: *
+Disallow:
+Sitemap: https://YOUR-DOMAIN-HERE/sitemap.xml
