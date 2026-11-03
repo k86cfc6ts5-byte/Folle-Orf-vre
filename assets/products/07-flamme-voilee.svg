@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 900">
+<defs><radialGradient id="bg"><stop stop-color="#34251d"/><stop offset="1" stop-color="#100f0e"/></radialGradient><linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f2d89a"/><stop offset=".35" stop-color="#a77a39"/><stop offset=".62" stop-color="#f4d99a"/><stop offset="1" stop-color="#755027"/></linearGradient><filter id="shadow"><feGaussianBlur stdDeviation="18"/></filter></defs>
+<rect width="900" height="900" fill="url(#bg)"/>
+<path d="M0 690 Q220 570 460 700 T900 650" fill="none" stroke="#6e2529" stroke-width="12" opacity=".5"/>
+<ellipse cx="450" cy="690" rx="210" ry="48" fill="#000" opacity=".6" filter="url(#shadow)"/>
+<path d="M365 0 Q450 145 535 0" fill="none" stroke="url(#gold)" stroke-width="13"/>
+<path d="M365 0 Q450 160 535 0" fill="none" stroke="#e6c783" stroke-width="3"/>
+<circle cx="450" cy="175" r="48" fill="none" stroke="url(#gold)" stroke-width="17"/>
+<path d="M450 223 L450 285" stroke="url(#gold)" stroke-width="17"/>
+<path d="M450 276 C315 276 260 370 276 510 C292 650 366 735 450 765 C534 735 608 650 624 510 C640 370 585 276 450 276Z" fill="#241a14" stroke="url(#gold)" stroke-width="24"/>
+<path d="M450 306 C350 306 305 385 319 505 C332 615 385 690 450 720 C515 690 568 615 581 505 C595 385 550 306 450 306Z" fill="none" stroke="#d8b875" stroke-width="5"/>
+<path d="M450 350 C382 350 350 405 360 500 C370 585 405 635 450 660 C495 635 530 585 540 500 C550 405 518 350 450 350Z" fill="#5b3924" stroke="url(#gold)" stroke-width="8"/>
+<path d="M450 380 C405 405 390 450 400 505 C410 555 430 585 450 600 C470 585 490 555 500 505 C510 450 495 405 450 380Z" fill="#1a1714" stroke="#d5b16b" stroke-width="4"/>
+<path d="M450 420 C420 445 418 490 450 535 C482 490 480 445 450 420Z" fill="url(#gold)"/>
+<g fill="none" stroke="#d9b978" stroke-width="5"><path d="M330 390q-45 40-8 90q-35 45 10 85"/><path d="M570 390q45 40 8 90q35 45-10 85"/><path d="M365 620q85 65 170 0"/><path d="M365 360q85-65 170 0"/></g>
+<g fill="#e7cf9a" stroke="#8b642f" stroke-width="4"><circle cx="450" cy="294" r="12"/><circle cx="450" cy="746" r="11"/><circle cx="290" cy="510" r="10"/><circle cx="610" cy="510" r="10"/></g>
+<path d="M450 765 Q450 810 450 840" stroke="url(#gold)" stroke-width="10"/><path d="M420 840 Q450 870 480 840" fill="none" stroke="url(#gold)" stroke-width="9"/>
+<text x="450" y="875" text-anchor="middle" fill="#b99a62" font-family="Georgia,serif" font-size="22" letter-spacing="8">LA FLAMME VOILÉE</text>
+</svg>
