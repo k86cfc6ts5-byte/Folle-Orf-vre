@@ -1,7 +1,7 @@
 // GET /api/invoice?ref=FO-INV-0001 — public details a client needs to pay an invoice.
-import { json, cleanRef, getInvoice, hasKeys } from "../_lib/razorpay.js";
+import { json, cleanRef, getInvoice, guarded, hasKeys } from "../_lib/razorpay.js";
 
-export async function onRequestGet({ request, env }) {
+export const onRequestGet = guarded(async function ({ request, env }) {
   if (!env.DB) return json({ error: "The payment service is not configured yet." }, 503);
   const reference = cleanRef(new URL(request.url).searchParams.get("ref"));
   if (!reference) return json({ error: "Please enter your invoice reference." }, 400);
@@ -16,4 +16,4 @@ export async function onRequestGet({ request, env }) {
     status: invoice.status,
     keyId: hasKeys(env) ? env.RAZORPAY_KEY_ID : null // key ID is public by design; the secret never leaves the server
   });
-}
+});

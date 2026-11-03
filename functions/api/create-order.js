@@ -1,7 +1,7 @@
 // POST /api/create-order { invoice } — creates a Razorpay order for the invoice's server-side amount.
-import { json, cleanRef, getInvoice, hasKeys, createRazorpayOrder } from "../_lib/razorpay.js";
+import { json, cleanRef, getInvoice, guarded, hasKeys, createRazorpayOrder } from "../_lib/razorpay.js";
 
-export async function onRequestPost({ request, env }) {
+export const onRequestPost = guarded(async function ({ request, env }) {
   if (!env.DB || !hasKeys(env)) return json({ error: "The payment service is not configured yet." }, 503);
   let body;
   try { body = await request.json(); } catch { return json({ error: "Invalid request." }, 400); }
@@ -31,4 +31,4 @@ export async function onRequestPost({ request, env }) {
     .bind(result.data.id, invoice.reference).run();
 
   return json({ order_id: result.data.id, amount: result.data.amount, currency: result.data.currency });
-}
+});

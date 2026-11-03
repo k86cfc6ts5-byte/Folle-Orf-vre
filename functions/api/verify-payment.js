@@ -1,7 +1,7 @@
 // POST /api/verify-payment — checks Razorpay's signature and only then marks the invoice paid.
-import { json, cleanRef, getInvoice, hasKeys, hmacSha256Hex, safeEqual } from "../_lib/razorpay.js";
+import { json, cleanRef, getInvoice, guarded, hasKeys, hmacSha256Hex, safeEqual } from "../_lib/razorpay.js";
 
-export async function onRequestPost({ request, env }) {
+export const onRequestPost = guarded(async function ({ request, env }) {
   if (!env.DB || !hasKeys(env)) return json({ error: "The payment service is not configured yet." }, 503);
   let body;
   try { body = await request.json(); } catch { return json({ error: "Invalid request." }, 400); }
@@ -22,4 +22,4 @@ export async function onRequestPost({ request, env }) {
       .bind(paymentId, reference, orderId).run();
   }
   return json({ ok: true, reference, payment_id: paymentId });
-}
+});

@@ -11,9 +11,24 @@ export function hasKeys(env) {
   return Boolean(env.RAZORPAY_KEY_ID && env.RAZORPAY_KEY_SECRET);
 }
 
+export class NotReady extends Error {}
+
 export async function getInvoice(env, reference) {
-  return env.DB.prepare("SELECT * FROM invoices WHERE reference = ?").bind(reference).first();
+  try {
+    return await env.DB.prepare("SELECT * FROM invoices WHERE reference = ?").bind(reference).first();
+  } catch (e) {
+    throw new NotReady(String(e)); // e.g. invoices table not created yet
+  }
 }
+
+// Wraps a handler so database/setup failures return a clean JSON 503 instead of a Cloudflare error page.
+export const guarded = handler => async ctx => {
+  try { return await handler(ctx); }
+  catch (e) {
+    if (e instanceof NotReady) return json({ error: "The payment service is not configured yet." }, 503);
+    return json({ error: "Something went wrong. Please try again." }, 500);
+  }
+};
 
 export async function createRazorpayOrder(env, { amount, currency, receipt, notes }) {
   const auth = btoa(`${env.RAZORPAY_KEY_ID}:${env.RAZORPAY_KEY_SECRET}`);
