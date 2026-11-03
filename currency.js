@@ -2,7 +2,7 @@
    Reference rates updated 3 Nov 2026 — refresh periodically. */
 (() => {
   const RATES = { USD: 1, INR: 94.90, EUR: 1 / 1.1183, AED: 3.6725 };
-  const ROUND = { USD: 100, INR: 10000, EUR: 100, AED: 500 };
+  const ROUND = { USD: 10, INR: 500, EUR: 10, AED: 50 };
   const FORMAT = {
     USD: n => 'US$' + n.toLocaleString('en-US'),
     INR: n => '₹' + n.toLocaleString('en-IN'),
