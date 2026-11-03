@@ -35,7 +35,7 @@ export async function onRequestPost({ request, env }) {
   const reference = `FO-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
   try {
     await env.DB.prepare(`INSERT INTO enquiries (reference, name, email, country, phone, product, message, privacy_consent, public_name_consent, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, 'new', datetime('now'))`)
-      .bind(reference, name, email, country, phone, product, message, 0).run();
+      .bind(reference, name, email, country, phone, product, message, body.publicNameConsent ? 1 : 0).run();
     return json({ ok: true, reference }, 201);
   } catch (error) {
     return json({ error: "We could not save your enquiry. Please try again shortly." }, 500);

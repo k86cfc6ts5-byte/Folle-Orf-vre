@@ -13,7 +13,7 @@
   <main>
     <section class="enquiry-hero"><p class="eyebrow">THE FIRST EDITION · PRIVATE CLIENT ENQUIRIES</p><h1>An introduction<br><em>to the maison.</em></h1><p>Our creations are offered in limited editions. Tell us which piece has caught your attention. Every enquiry is read personally, and the maison replies privately to discuss specification, sizing and timing.</p></section>
     <section class="enquiry-wrap">
-      <aside class="enquiry-aside"><p class="eyebrow">HOW IT WORKS</p><h2>Considered.<br><em>Never automatic.</em></h2><p>An enquiry is simply the beginning of a conversation. It is not an order, and nothing is charged on this website.</p><p>Each creation is made to order. Should you wish to proceed, the maison will share the final specification, materials, price, taxes and timing in writing before anything is agreed.</p><p class="form-note">Prices are shown in INR and are indicative, exclusive of applicable taxes.</p></aside>
+      <aside class="enquiry-aside"><p class="eyebrow">HOW IT WORKS</p><h2>Considered.<br><em>Never automatic.</em></h2><p>An enquiry is simply the beginning of a conversation. It is not an order, and nothing is charged on this website.</p><p>Each creation is made to order. Should you wish to proceed, the maison will share the final specification, materials, price, taxes and timing in writing before anything is agreed.</p><div class="release-date"><span>THE FIRST EDITION REGISTER</span><strong>31 December 2026 · 00:00 IST</strong><p class="form-note">Owners of the first edition may choose to be named in <a href="register.html">the Register</a>. No name is ever published without separate, explicit consent.</p></div><p class="form-note">Prices are shown in INR and are indicative, exclusive of applicable taxes.</p></aside>
       <div>
         <form class="enquiry-form" id="enquiry-form">
           <div class="form-field"><label for="name">Full name *</label><input id="name" name="name" autocomplete="name" maxlength="100" required></div>
@@ -24,7 +24,8 @@
           <div class="form-field"><label for="message">A note to the maison (optional)</label><textarea id="message" name="message" maxlength="1200" placeholder="Tell us what draws you to this creation, or ask a question."></textarea></div>
           <div class="honeypot" aria-hidden="true"><label for="website">Leave this field empty</label><input id="website" name="website" tabindex="-1" autocomplete="off"></div>
           <label class="consent-row"><input type="checkbox" name="privacyConsent" value="yes" required><span>I agree that Folle Orfèvre may use the information submitted to respond to and assess this enquiry, in accordance with its <a class="privacy-link" href="legal.html">privacy and legal information</a>. *</span></label>
-                    <p class="form-note">Please do not include payment details or sensitive personal information. An enquiry is not an order.</p>
+                    <label class="consent-row"><input type="checkbox" name="publicNameConsent" value="yes"><span>Should I become an owner of a first-edition piece, I consent to Folle Orfèvre naming me in the Register unveiled on 31 December 2026. Optional; it does not affect my enquiry.</span></label>
+          <p class="form-note">Please do not include payment details or sensitive personal information. An enquiry is not an order.</p>
           <button class="button-dark enquiry-submit" id="submit-button" type="submit">Submit private enquiry <span>↗</span></button>
           <div class="form-status" id="form-status" role="status" aria-live="polite"></div>
         </form>
@@ -40,7 +41,7 @@
     if(requested){const option=[...document.getElementById('product').options].find(o=>o.dataset.slug===requested||o.text===requested);if(option)option.selected=true;}
     form.addEventListener('submit',async e=>{
       e.preventDefault(); status.classList.add('is-visible'); status.textContent='Submitting your enquiry securely…'; button.disabled=true;
-      const fd=new FormData(form); const payload={name:fd.get('name'),email:fd.get('email'),country:fd.get('country'),phone:fd.get('phone'),product:fd.get('product'),message:fd.get('message'),privacyConsent:fd.get('privacyConsent')==='yes',website:fd.get('website')};
+      const fd=new FormData(form); const payload={name:fd.get('name'),email:fd.get('email'),country:fd.get('country'),phone:fd.get('phone'),product:fd.get('product'),message:fd.get('message'),privacyConsent:fd.get('privacyConsent')==='yes',publicNameConsent:fd.get('publicNameConsent')==='yes',website:fd.get('website')};
       try{const response=await fetch('/api/enquiry',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});const data=await response.json();if(!response.ok)throw new Error(data.error||'The enquiry could not be submitted.');form.reset();status.textContent='Your enquiry has been received. Reference: '+data.reference+'. The maison will reply privately, usually within 48 hours.';}
       catch(err){status.textContent=err.message==='Failed to fetch'?'We could not reach the maison just now. Please check your connection and try again.':err.message;}
       finally{button.disabled=false;}
