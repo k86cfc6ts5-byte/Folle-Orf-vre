@@ -5,4 +5,4 @@ pages_build_output_dir = "."
 [[d1_databases]]
 binding = "DB"
 database_name = "folle-orfevre-enquiries"
-database_id = "REPLACE_WITH_YOUR_CLOUDFLARE_D1_DATABASE_ID"
+database_id = "95b705de-103f-4877-bb8c-458d3dde42db"
