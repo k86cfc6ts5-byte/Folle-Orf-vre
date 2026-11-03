@@ -1,7 +1,11 @@
-# FOLLE ORFÈVRE
+# Folle Orfèvre
 
-An Independent Maison of Fine Objects.
+Website for Folle Orfèvre — Maison d'Objets Rares. Static site on Cloudflare Pages with one Pages Function (`functions/api/enquiry.js`) that stores enquiries in Cloudflare D1.
 
-This repository contains the Folle Orfèvre limited-edition enquiry-led website. The brand's Chronicle is fictional brand storytelling, not a claim of historical origin.
+## Deploy
+1. Create the D1 database and apply the schema: `wrangler d1 execute folle-orfevre-enquiries --remote --file=schema.sql`
+2. Bind it to the Pages project as `DB` (already set in `wrangler.toml`).
+3. Deploy: `wrangler pages deploy .`
 
-Website source files are being added to this repository.
+## Read enquiries
+`wrangler d1 execute folle-orfevre-enquiries --remote --command "SELECT product, COUNT(*) FROM enquiries GROUP BY product ORDER BY 2 DESC"`

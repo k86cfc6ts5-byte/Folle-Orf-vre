@@ -1,7 +1,14 @@
 const ALLOWED_PRODUCTS = new Set([
-  "L'Audace Signet", "La Volonté Cuff", "Le Temps Pendant", "La Mémoire Locket",
-  "L'Invention Earrings", "L'Intégrité Seal Pendant", "Archive No. 01 Medallion",
-  "The Unfinished Form", "Multiple creations / General enquiry"
+  "L’Éclat Orphique",
+  "Le Serpent Couronné",
+  "La Clef du Temps",
+  "L’Astre Noir",
+  "La Vigne Éternelle",
+  "Le Masque de Nuit",
+  "La Flamme Voilée",
+  "Le Médaillon des Muses",
+  "Multiple creations / General enquiry",
+  "Private appointment request"
 ]);
 const json = (body, status = 200) => new Response(JSON.stringify(body), {
   status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" }
@@ -28,7 +35,7 @@ export async function onRequestPost({ request, env }) {
   const reference = `FO-${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
   try {
     await env.DB.prepare(`INSERT INTO enquiries (reference, name, email, country, phone, product, message, privacy_consent, public_name_consent, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, 1, ?, 'new', datetime('now'))`)
-      .bind(reference, name, email, country, phone, product, message, body.publicNameConsent ? 1 : 0).run();
+      .bind(reference, name, email, country, phone, product, message, 0).run();
     return json({ ok: true, reference }, 201);
   } catch (error) {
     return json({ error: "We could not save your enquiry. Please try again shortly." }, 500);
