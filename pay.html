@@ -1,0 +1,102 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#11100f"><meta name="robots" content="noindex, nofollow"><title>Pay an Invoice — Folle Orfèvre</title><link rel="stylesheet" href="/styles.css"><link rel="icon" href="/assets/mark.svg" type="image/svg+xml"></head><body>
+<div class="announcement">PRIVATE CLIENT SERVICES · SECURE INVOICE PAYMENT</div>
+<header class="site-header"><a class="wordmark" href="/"><span>FOLLE</span><i>ORFÈVRE</i></a><button class="menu-toggle" aria-label="Open menu" aria-expanded="false">☰</button><nav class="nav"><a href="/#collection">Collection</a><a href="/payment.html">Payment &amp; ordering</a></nav><a class="header-link" href="/enquire.html">Private enquiry ↗</a></header>
+<section class="service-hero"><p class="eyebrow">PRIVATE CLIENT · INVOICE PAYMENT</p><h1>Settle an <em>invoice.</em></h1><p>Enter the reference on the invoice the maison sent you. The amount is set by your invoice and processed securely by Razorpay.</p></section>
+<main class="service-wrap">
+<aside class="service-aside"><p class="eyebrow">BEFORE YOU PAY</p><h2>Only ever<br><em>by invoice.</em></h2><p>Check that the reference, description and amount match the invoice you received from the maison. If anything looks different, do not pay; write to us through the <a class="privacy-link" href="/enquire.html">enquiry form</a> first.</p></aside>
+<div>
+<form class="service-form" id="lookup-form"><div class="wide"><label for="ref">Invoice reference *</label><input id="ref" name="ref" required maxlength="40" placeholder="FO-INV-0001" autocomplete="off"></div><div class="wide"><button type="submit">FIND MY INVOICE ↗</button></div></form>
+<div class="pay-invoice" id="invoice" hidden>
+<p class="eyebrow">INVOICE <span id="inv-ref"></span></p>
+<h3 id="inv-desc"></h3>
+<p class="pay-for">For <span id="inv-name"></span></p>
+<p class="pay-amount" id="inv-amount"></p>
+<button class="button button-dark" id="pay-button" type="button">Pay securely <span>↗</span></button>
+<p class="form-note">Payments are processed by Razorpay. Cards, UPI and net banking are accepted. Folle Orfèvre never sees your card details.</p>
+</div>
+<p class="service-status" id="pay-status" role="status" aria-live="polite"></p>
+</div>
+</main>
+<footer class="footer"><div class="footer-bottom"><span>© 2026 FOLLE ORFÈVRE</span><div><a href="/payment.html">Payment &amp; ordering</a><a href="/legal.html">Legal &amp; privacy</a></div></div></footer>
+<script src="/site.js"></script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const status = $('pay-status'), box = $('invoice'), payBtn = $('pay-button');
+  let invoice = null;
+  const say = msg => { status.textContent = msg; };
+  const money = (amount, currency) => {
+    try { return new Intl.NumberFormat(currency === 'INR' ? 'en-IN' : 'en-US', { style: 'currency', currency }).format(amount / 100); }
+    catch { return currency + ' ' + (amount / 100).toFixed(2); }
+  };
+  const post = async (url, body) => {
+    const r = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+    const data = await r.json().catch(() => ({}));
+    if (!r.ok) throw new Error(data.error || 'Something went wrong. Please try again.');
+    return data;
+  };
+
+  async function lookup(ref) {
+    box.hidden = true; invoice = null; say('Finding your invoice…');
+    try {
+      const r = await fetch('/api/invoice?ref=' + encodeURIComponent(ref));
+      const data = await r.json().catch(() => ({}));
+      if (!r.ok) throw new Error(data.error || 'We could not find that invoice.');
+      invoice = data;
+      $('inv-ref').textContent = data.reference;
+      $('inv-desc').textContent = data.description;
+      $('inv-name').textContent = data.clientName;
+      $('inv-amount').textContent = money(data.amount, data.currency);
+      box.hidden = false;
+      if (data.status === 'paid') { payBtn.hidden = true; say('This invoice has already been paid. Thank you.'); }
+      else if (!data.keyId) { payBtn.hidden = true; say('Online payment is not available yet. The maison will contact you.'); }
+      else { payBtn.hidden = false; say(''); }
+    } catch (err) { say(err.message === 'Failed to fetch' ? 'We could not reach the maison just now. Please try again.' : err.message); }
+  }
+
+  $('lookup-form').addEventListener('submit', e => { e.preventDefault(); lookup($('ref').value); });
+
+  payBtn.addEventListener('click', async () => {
+    if (!invoice) return;
+    if (typeof Razorpay === 'undefined') { say('The secure payment window could not load. Please check your connection and try again.'); return; }
+    payBtn.disabled = true; say('Opening secure payment…');
+    try {
+      const order = await post('/api/create-order', { invoice: invoice.reference });
+      const rzp = new Razorpay({
+        key: invoice.keyId,
+        order_id: order.order_id,
+        amount: order.amount,
+        currency: order.currency,
+        name: 'Folle Orfèvre',
+        description: invoice.description,
+        notes: { invoice: invoice.reference },
+        theme: { color: '#171613' },
+        handler: async resp => {
+          say('Confirming your payment…');
+          try {
+            await post('/api/verify-payment', { invoice: invoice.reference, ...resp });
+            payBtn.hidden = true;
+            say('Payment received for ' + invoice.reference + '. Thank you — the maison will be in touch with your receipt. Payment ID: ' + resp.razorpay_payment_id);
+          } catch (err) {
+            say('We could not confirm this payment automatically. Please keep your payment ID (' + resp.razorpay_payment_id + ') and contact the maison.');
+          } finally { payBtn.disabled = false; }
+        },
+        modal: { ondismiss: () => { payBtn.disabled = false; say('Payment cancelled. You have not been charged.'); } }
+      });
+      rzp.on('payment.failed', resp => {
+        payBtn.disabled = false;
+        say('The payment did not go through: ' + ((resp.error && resp.error.description) || 'please try again or use another method.'));
+      });
+      rzp.open();
+    } catch (err) {
+      payBtn.disabled = false;
+      say(err.message === 'Failed to fetch' ? 'We could not reach the maison just now. Please try again.' : err.message);
+    }
+  });
+
+  const initial = new URLSearchParams(location.search).get('invoice');
+  if (initial) { $('ref').value = initial; lookup(initial); }
+})();
+</script>
+</body></html>
